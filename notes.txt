@@ -1,0 +1,430 @@
+#!/bin/bash             -shebang line for bash
+
+###################################################
+# variables
+
+VARIABLE_NAME="value"
+# can also be assigned commands
+VARIABLE_NAME=$(command)      - the command must be inside ()
+
+# variables must start with letters or _
+# can not start with numbers can not include - or @ in the name
+
+# Tests
+[ condition-to-test-for ]
+[ -e /etc/passwd ]
+
+#File operators (tests)
+-d FILE         True if file is a directory
+-e FILE         True if file exists
+-f FILE         True if file exists and is regular file
+-r FILE         True if file and is readable by you
+-s FILE         True if file exists and is not emptpy
+-w FILE         True if file is writable by you
+-x FILE         True if file is executable by you
+
+#String operators (tests)
+-z String       True if string is empty
+-n String       True if string is not empty
+
+STRING1 = STRING2
+True if strings are equal
+
+STRING1 != STRING2
+True if strings are not equal
+
+# Arithmetic operators (tests)
+arg1 -eq arg2   True if arg1 is equal to arg2
+arg1 -ne arg2   True if arg1 is not equal to arg2
+arg1 -lt arg2   True if arg1 is less than arg2
+arg1 -le arg2   True if arg1 is less than or equal to arg2
+arg1 -gt arg2   True if arg1 is greater than arg2
+arg1 -ge arg2   True if arg1 is greater than or equal to arg2
+
+# parameters
+$0 - $9         - command line arguments
+$0              - the script
+$1              - paarmeter 1
+$2              - parameter 2
+...
+$9              - the 9th and last param
+
+# accept standard input
+read -p "enter a user name: " USER          - makes the USER variable = to the input
+
+###################################################
+
+# debugging
+
+#!/bin/bash -x          -shebang for debuging xtrace
+set -x                  - enable xtrace to use in the command line
+set +x                  - disable xtrace in the comnad line
+# to add this to a script:
+# add set -x before line with a command example:
+
+set -x                  - enables xtrace for the commands in all lines following the set-x
+echo "test"             - command traced
+set +x                  - disables xtrace for evething after
+pwd                     - command not traced
+
+-ex                     - exits on an error status > 0
+-v                      - verbose prints shell input lines as they occur
+
+help set
+
+# simple script modification:
+
+#!/bin/bash
+#DEBUG="echo"           - if debug is commented out is will just be a space and not do anything
+$DEBUG ls               - anywhere else in the script
+
+PS4='+'                 - default line marker for -x
+PS4='+ $BASH_SOURCE'    - changes the default to + <script name>
+PS4='+ $LINENO'         - changes the default to sho line number
+
+# avoide running windows scripts on linux or vice versa
+windows adds carage returns to text files it will throw erros on linux and linux scripts will
+have errors on window due to the lack of carrage returns
+use the -v command to check if files have carrage returns
+
+
+# you can use <dos2unix> to fix scripts
+# you can use <unix2dos> to go the other way
+
+
+s/<vps_ip>/{vps_ip}/g' nginx_config.sh > {server_name}/ngin####################################################
+# tests
+help test           - to display tests you can proform in bash
+man test            - man page
+
+# if statements
+
+#!/bin/bash
+MY_SHELL="bash"
+
+if [$"MY_SHELL" = "csh" ]
+then
+    echo "you seem to like csh"
+elif ["$MY_SHELL" = "bash" ]
+then
+    echo "you like the bash shell"
+else
+    echo "you dont seem to like csh or bash"
+fi
+
+# function syntax
+
+function name () {
+    if [ -d $1 ]
+    then
+        command
+    else
+        command
+    fi
+}
+
+
+
+# options
+
+-d FILE                 - True if file is a dir
+-e FILE                 - True if file exists
+-f FILE                 - True if file eixists and is a reg file
+-r FILE                 - True if file is readable by you
+-s FILE                 - True if file exists adn is not empty
+-w FILE                 - True if File is writable by you
+-x FILE                 - True is file is exefcutable by you
+-z STRING               - True if string is empty
+-n STRING               - True if string is NOT empty
+
+STRING1=STRING2         - True if the strings are equal
+STRING1!=STRING2        - True if the strings are NOT equal
+
+arg1 -eq arg2           - True if arg1 is equal to arg2
+arg1 -ne arg2           - True is arg1 is not equal to arg2
+
+arg1 -lt arg2           - less than
+arg1 -le arg2           - less than or equal to
+arg1 -gt arg2           - greater than
+arg1 -ge arg2           - greater than or equal to
+
+#wildcards
+
+*                       - matches zero or more characters
+*.txt                   - shows all .txt files
+a*                      - shows all files starting with the letter a
+a*.txt                  - shows all .txt files starting with a
+
+?                       - matches exactly one character
+?.txt                   - shows all one letter .txt files
+a?                      - shows 2 letter files starting with a
+a?.txt                  - shows 2 letter .txt files starting with a
+?????.txt               - shows 5 letter .txt files
+
+# character class
+
+[]                      - matches characters inside the brakets
+ca[nt]*                 - will match:
+    - can
+    - cat
+    - candy
+    - catch
+can[nt]!                - will return files with out the [nt]
+ls c[aeiou]t            - will return things like
+    - cat
+    - cot
+
+
+# Ranges
+
+[a-g]                   - match all files that start with with characters fron a - g
+[3-6]                   - matches all files that start with 3 to 6
+
+#predefines classes
+
+[[:apha:]]              - letters upper and lower
+[[:alnum:]]             - alpha + numbers
+[[:digit:]]             - numbers 0-9
+[[:lower:]]             - lower case only
+[[:space:]]             - whitespace (spaces tabs newline)
+[[:upper:]]             - upper case only
+
+
+#escape char
+
+\                       - is the esacpe character
+
+####################################################
+
+
+#case statements - like an if statement to compair against multiple values
+#case statements are CASE sensative
+#if the entered arg doesnt match the cases in teh statement nothing happens
+
+#example
+
+case "$1" in                                - opening a case statement $1 is a command line arg
+    start|START)                            - if $1 == start OR START execute the following line. the pipe acts as an OR
+        /usr/sbin/sshd                      - only runs if the line above is true
+        ;;                                  - ends the first 'if' statement
+    stop)                                   - if $1 == stop - will only work for stop. STOP Will not work here
+        kill $(cat /var/run/sshd.pid)       - only runs if the above is True
+        ;;                                  - ends this 'if' statemet
+esac                                        - case backwards ends the statement
+
+# add the following to the case statement above esac to expand
+
+    *)
+        echo "Usage: $0 start|stop" ; exit 1
+        ;;
+esac
+
+
+#you can use character classs
+
+read -p "Enter y or n: " ANSWER             - input line
+case "$ANSWER" in                           - use the ANSWER variable for the statment
+    [Yy]|[Yy][Ee][Ss])                      - use character classes for either 'y' or any combination of yes lower or caps
+        echo "you answered yes."            - echo for the return
+        ;;                                  - end the 'if' block
+esac
+
+
+#logging
+
+syslog                              - syslog standard built into linux
+facilities:
+    kern, user, mail,daemon, auth   - user is default but you can specify others
+    local0 - local7                 - custon facilities
+
+possiblie location:
+    /var/log/messages
+    /var/log/syslog
+
+#usage
+
+logger "message"                                - passes message to logger util
+logger -p local0.info "message"                 - -p specifies the local0 facility .info is the sevarity followed with a 'message'
+logger -t myscript -p local0.info "message"     - -t tags a log use the script name in the tag so you can grep it from the log file later
+logger -i -t myscript "message"                 - -i includes the pid (process id) use if you are running multiple scripts at the same time
+logger -s -t mysctipt -p local0.info "message"  - same as above but the -s sends the report to the terminal as well
+
+
+####################################################
+
+### 0 is True 1 is False in bash ###
+
+####################################################
+# for loops
+#!/bin/bash
+PICTURES=$(ls *jpg)
+DATE=$(date +%F)
+
+for PICTURE IN $PICTURES
+do
+    echo "renaming ${PICTURE} to ${DATE}-${PICTIURE}
+    mv ${PICTUre} ${DATE}-${PICTURE}
+done
+
+#while loops
+
+infinite loops must be killed by either CTRL+C or if a process the kill command
+
+#!/bin/bash
+INDEX=1                                         - create an index variable
+while [ $INDEX -lt 6 ]                          - while index is < 1
+do
+    echo "creating projcet-${INDEX}"            - echo command
+    mkdir /usr/local/project-${INDEX}           - mkdir
+    ((INDEX++))                                 - increment index variable needs (()) to do math - arithmatic expansion needs double parens
+done
+
+
+#read a file line by line
+
+#!/bin/bash
+LINE_NUM=1                                      - sets line #
+while read LINE                                 - while there is a line to read
+do
+    echo "${LINE_NUM}: ${LINE}"                 - prints the line to the terminal
+    ((LINE_NUM++))                              - increment 
+done < /etc/fstab                               - this is the file to read
+
+#modify the above to only print lines with xfs
+
+grep xfs /etc/fstab | while read LINE           - grep xfs <location> then pipe the lines to the while loop
+do
+    echo "xfs: ${LINE}"                         - echo to term
+done
+
+#read command variables
+
+grep xfs /etc/fstab | while read FS MP REST     - grep xfs <location> then pipe the lines to the while loop FS MP and REST are variables FS is the first word MP is the second REST is everything else
+    echo "${FS_NUM}: file system: ${FS}"
+    echo "${FS_NUM}: mount point: ${MP}"
+    ((FS_NUM++))
+done
+
+# if you want to exit a loop but not the script use:
+
+break           - will break out of a loop
+continue        - restarts the loop at the next iteration
+
+
+###################### sed ####################
+# stream editor
+a stream is the data that travels from one process to another
+# sed is case sensitive
+# will apply the replacement string to the first occurance of the search pattern appearing on each line
+
+#sed usage
+    #examples
+        substitute text
+        remove lines
+        append text afer a given line
+        insert text before certain lines
+    #sed is used programmically not interactively like an editor
+
+# most common use is a command line find and replace
+sed 's/<search pattern>/<replacement string>/' <filename>
+     ||   |                   |                  |
+     ||   |                   |                  + file name
+     ||   |                   +- substitution (replacemnt string)
+     ||   +- search pattern text to search for in the file (this is a regualer expression)
+     |+- the / are delimiters
+     +- s flag for substitute
+
+sed 's/<search pattern>/<reaplce>/i' <file>
+    # the i (or I) at the end makes the search pattern case insensitive
+
+sed 's/<search pattern>/<reaplce>/g' <file>
+    # the g (global) will aply the replacement string to every instance of the search pattern appearing even if it appears more than once per line 
+
+sed 's/<search pattern>/<reaplce>/<int>' <file>
+    # you can use an int to specify which occurance gets changed ie 1 is the first occurance 2 the second 
+
+# in these example the original file is not altered its just changing that output
+# that is ebing sent to standard out'
+
+# you can send any of these commands to another file  using '>' just like anything in linux
+
+sed -i 's/<search>/<replace>/' <file>
+    # the i flag modifies in place and will change the content of the original file
+
+sed -i.bak 's/<search>/<replace>/' <file>
+    # modifies in line and creates a backup of the original
+    ## do not use a space after the -i it will fuck up
+
+sed 's/<search pattern>/<reaplce>/gw <new file>' <file>
+    # the g (global) will aply the replacement string to every instance of the search pattern appearing even if it appears more than once per line 
+    # the w will only write the lines that are changed to the new file
+
+# you can pipe the output from cat for example to sed
+# ex
+    cat <filename> | sed 's/<search>/<replace>/g'
+         # you can do this in place of:
+            sed 's/<search pattern>/<reaplce>/g' <file>
+
+# To escape / when needed:
+echo '/home/john' | sed 's/\/home\/john/\/export\/users\/johnb/'
+    # this will echo /home/john but replace it will /export/users/johnb in stout
+
+    # the better way is to change the delimiter to something other than /
+    echo '/home/john' | sed 's#/home/john#/export/users/johnb#'
+    # in this case i use # as the delimiter
+    echo '/home/john' | sed 's:/home/john:/export/users/johnb:'
+    # in this case i use : as the delimiter
+
+# when to use:
+    make a template file with a placeholder name and use sed to replace when deploying
+    when copying a <file> from one host to another and use sed to replace the old hostname
+
+# to delete a line
+sed '/<search>/d' <file>
+    # there is no s (for substitute)
+    # the d is to delete the lines that the search appears in
+
+sed '/^#/d' <file>
+    # the ^# searches for # at the beginning of the line with out the ^ the search would
+    # check any instance of a # possibly effecting code
+    # this will remove comments
+
+sed '/^$/d' <file>
+    # ^ is the beginning of a line $ is the end of the line
+    # so this searches for blank lines. a line with nothing btwn the beginning and end
+
+sed '/^#/d ; /^$/d' <file>
+    # sed will 1st delete comment lines followed by deleting blank lines
+
+sed '/^#/d ; /^$/d ; s/apache/httpd/' <file>
+    # sed does the above and then replaces apache with httpd on the lines that are left
+
+sed -e '/^#/d' -e '/^$/d' -e  's/apache/httpd/' <file>
+    # does the same as above using the -e flag 
+
+
+write a sed file for example:
+    script.sed
+        /^#/d
+        /^$/d
+        s/apache/httpd/
+
+sed -f <script.sed> <file>
+
+# run a sed command againsta a specifig address: 
+sed '2 s/apache/httpd/' <file>
+or
+sed '2s/apache/httpd/' <file>
+    # this will only modify the 2nd line in the file. dont need the space before the s
+
+sed '/Group/ s/apache/httpd/' config
+    # this will only modify lines that start with the word group regardless of line number
+
+sed '1,3 s/run/execute/' <file>
+    # 1,3 is a range 1 through 3
+    # this changes run to exevute for lines 1-3.
+
+sed '/#User/,/^$/ s/run/execute/' <file>
+    # regular expression :
+    # for the range starting at User and ending at the next blank line
+    # then change run to execute
